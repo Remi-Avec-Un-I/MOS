@@ -75,6 +75,13 @@ class Command:
     description: Optional[str]
     threaded: bool
 
+    def __hash__(self):
+        return hash(
+            (
+                self.name, self.func, tuple(self.alias) if self.alias else None, self.description, self.threaded
+            )
+        )
+
 @dataclass
 class Alias:
     name: str
@@ -97,13 +104,13 @@ class FullCommand:
         return hash(
             (
                 (
-                    self.command.alias,
+                    tuple(self.command.alias) if self.command.alias else None,
                     self.command.description,
                     self.command.func,
                     self.command.threaded
                 ),
                 (
-                    (a.from_command, a.func, a.name, a.threaded) for a in self.alias
+                    tuple((a.from_command, a.func, a.name, a.threaded) for a in self.alias)
                 )
             )
         )
